@@ -2,10 +2,9 @@ class ResultSet
 
 	include Validation
 
-	def initialize(table_class, array_columns = nil)
-		@table = table_class
-		@fields = array_columns || @table.fields.keys
-		@result 		= @table.records
+	def initialize(records, fields_of_table, array_fields = nil)
+		@fields 		= array_fields || fields_of_table
+		@result 		= records
 
 		@equal 			= Hash.new
 		@min 				= Hash.new
@@ -13,27 +12,31 @@ class ResultSet
 		@like 			= Hash.new
 	end
 
-	def equal(column, value)
-		@equal[column] = value
+	def equal(field, value)
+		@equal[field] = value
 		return self
 	end
 
-	def min(column, value)
-		@min[column] = value
+	def min(field, value)
+		@min[field] = value
+		return self
 	end
 
-	def max(column, value)
-		@max[column] = value
+	def max(field, value)
+		@max[field] = value
+		return self
 	end
 
-	def like(column, value)
-		@like[column] = value
+	def like(field, value)
+		@like[field] = value
+		return self
 	end
 
 	def result
-		result_equal if !@equal.nil?
-
-
+		result_equal 		if @equal.keys.count 	!= 0
+		result_min 			if @min.keys.count 		!= 0
+		result_max 			if @max.keys.count 		!= 0
+		result_like 		if @like.keys.count 	!= 0
 		return @result
 	end
 
@@ -42,9 +45,7 @@ class ResultSet
 	def result_equal
 		@equal.each do |col_name, col_value|
 			this_result = Array.new
-			@table.records.each do |id, record|
-				# puts "---- #{id} ---- \n ----- #{record.send :col1}"
-				# puts "- col_value - #{col_value} -+- - col_value - #{col_value}"
+			@result.each do |id, record|
 				r = record.send col_name.to_sym
 				if r == col_value
 					this_result << id
@@ -53,35 +54,49 @@ class ResultSet
 			puts "this_result_> #{this_result}"
 			remove_if_key_not_in(this_result)
 		end
+	end
 
+	def result_min
+		@min.each do |col_name, col_value|
+			this_result = Array.new
+			@result.each do |id, record|
+				r = record.send col_name.to_sym
+				if r >= col_value
+					this_result << id
+				end
+				puts "@min['#{col_name}'] = #{col_value} -> @record[#{id}] = #{record.send col_name.to_sym}"
+			end
+			puts "this_result_> #{this_result}"
+			remove_if_key_not_in(this_result)
+		end
+	end
 
-		# @equal.each do |k, v|
-		# 	this_result = Array.new
-		# 	@table.records.each do |kk, vv|
-		# 		puts "---- #{kk} ---- \n ----- #{vv.send :col1}"
-		# 		puts "- k - #{k} -+- - v - #{v}"
-		# 		r = vv.send k.to_sym
-		# 		if r == v
-		# 			this_result << kk
-		# 		end
-		# 	end
-		# 	remove_if_key_not_in(this_result)
-		# end
+	def result_max
+		@max.each do |col_name, col_value|
+			this_result = Array.new
+			@result.each do |id, record|
+				r = record.send col_name.to_sym
+				if r <= col_value
+					this_result << id
+				end
+			end
+			puts "this_result_> #{this_result}"
+			remove_if_key_not_in(this_result)
+		end
+	end
 
-
-
-
-		# @equal.each do |name, value|
-		# 	keys = Array.new
-		# 	@table.records.each do |k, v|
-		# 		if k.send "#{name}", value
-		# 			 keys << k
-		# 		end
-		# 	end
-		# 	@result.keys.each do |key|
-		# 		@result.delete(key)	if keys.include?(key) == false
-		# 	end
-		# end
+	def result_like
+		@like.each do |col_name, col_value|
+			this_result = Array.new
+			@result.each do |id, record|
+				r = record.send col_name.to_sym
+				if r =~ Regexp.new(col_value)
+					this_result << id
+				end
+			end
+			puts "this_result_> #{this_result}"
+			remove_if_key_not_in(this_result)
+		end
 	end
 
 	def remove_if_key_not_in(arr)

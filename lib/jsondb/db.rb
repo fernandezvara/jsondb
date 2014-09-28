@@ -22,7 +22,16 @@ class Db
 	end
 
 	def table_add(name)
-		@tables[name] = Table.new(name)
+		if @tables.keys.include?(name)
+			raise "Table '#{name}' already defined."
+		else
+			@tables[name] = Table.new(name)
+		end
+	end
+
+	def table_drop(name)
+		# falta borrar el fichero...
+		@tables.delete(name)
 	end
 
 	def table_names

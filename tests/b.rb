@@ -10,14 +10,14 @@ puts "---"
 puts db.tables
 puts "---"
 puts db.table_names
-db.table('aaa').columns.add('col1')
-db.table('aaa').column('col1').type ="String"
-db.table('aaa').column('col1').default = "patatitas"
+db.table('aaa').fields.add('col1')
+db.table('aaa').field('col1').type ="String"
+db.table('aaa').field('col1').default = "patatitas"
 
-db.table('aaa').columns.add('col2')
-db.table('aaa').column('col2').type ="String"
+db.table('aaa').fields.add('col2')
+db.table('aaa').field('col2').type ="String"
 puts db.tables
-puts db.table('aaa').columns.to_hash
+puts db.table('aaa').fields.to_hash
 
 record = db.table('aaa').new_record
 #record.col1 = "1"
@@ -69,14 +69,28 @@ db.table('aaa').records.each do |r, val|
 end
 
 puts "+-+-+-+-+"
-query = db.table('aaa').select([])
-result =  db.table('aaa').select([]).equal("col1", "patatitas").equal("col2", "10").result
+query = db.table('aaa').select()
+result =  db.table('aaa').select([]).equal("col1", "patatitas").like("col1", "atati").result
 puts result.count
 puts "*****"
 puts result
-result.each do |id, r|
-	#puts id
-	puts r.id
-	puts r.col1
-	puts r.col2
+
+db.table('bbb').fields.add("int")
+db.table('bbb').field("int").type="Fixnum"
+
+(1..14).each do |x|
+	record = db.table('bbb').new_record
+#record.col1 = "1"
+	record.int = x
+	puts record.to_hash	
+	puts record.new?
+	db.table('bbb').insert(record)
+	puts record.to_hash
+	puts record.new?
+end
+
+result2 = db.table('bbb').select([]).min('int', 3).max('int', 7).result
+puts result2.count
+result2.each do |id, rec|
+	puts "int --> #{rec.int}"
 end
