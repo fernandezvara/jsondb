@@ -52,7 +52,6 @@ describe "DB" do
 			$db.table('a')
 			$db.table('b')
 			$db.table('c')
-			sleep(5)
 			$db.table_drop('b')
 			$db.table_drop('c')
 			expect($db.table_names.count).to eq(1)

@@ -84,7 +84,6 @@ class Table
 
 		@records_file.contents = {}
 		@records.each do |id, record|
-			puts @records_file.contents
 			@records_file.contents[id] = record.to_hash
 		end
 		@records_file.save
