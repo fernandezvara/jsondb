@@ -7,4 +7,3 @@ require File.join(this_dir, 'jsondb/fields')
 require File.join(this_dir, 'jsondb/field')
 require File.join(this_dir, 'jsondb/record')
 require File.join(this_dir, 'jsondb/resultset')
-#require 'jsondb/command'
