@@ -1,4 +1,5 @@
 this_dir = File.dirname(__FILE__)
+require File.join(this_dir, 'jsondb/file_ops')
 require File.join(this_dir, 'jsondb/db')
 require File.join(this_dir, 'jsondb/validation')
 require File.join(this_dir, 'jsondb/table')

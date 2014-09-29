@@ -12,7 +12,7 @@ class Record
 			@record = data
 			@new = false
 		end
-		@updated = false
+		@persisted = false
 		set_defaults # we need to apply again the defaults
 	end
 
@@ -23,7 +23,7 @@ class Record
 			if attribute =~ /=$/
 				if @record[attribute] != args[0]
 					@record[attribute.sub('=', '')] = args[0]
-					@updated = true
+					@persisted = true
 				end
 			else
 				@record[attribute]
@@ -38,13 +38,13 @@ class Record
 		self.updated_at = Time.now.to_i
 		self.id = id
 		@new = false
-		@updated = false
+		@persisted = false
 	end
 
 	def update
 		self.updated_at = Time.now.to_i
 		@new = false
-		@updated = false
+		@persisted = false
 	end 
 
 	def to_hash
@@ -55,15 +55,15 @@ class Record
 		@new
 	end
 
-	def updated?
-		@updated
+	def persisted?
+		@persisted
 	end
 
 	def created_at
 		Time.at(@record['created_at'])
 	end
 
-	def updated_at
+	def persisted_at
 		Time.at(@record['updated_at'])
 	end
 

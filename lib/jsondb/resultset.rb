@@ -2,9 +2,13 @@ class ResultSet
 
 	include Validation
 
-	def initialize(records, fields_of_table, array_fields = nil)
-		@fields 		= array_fields || fields_of_table
-		@result 		= records
+	def initialize(table_class, array_fields = nil)
+		@fields 		= array_fields || table_class.fields.to_hash.keys
+		# actually it deletes the record!
+		@result 		= Hash.new()
+		table_class.records.each do |k, v|
+			@result[k] = v.dup
+		end
 
 		@equal 			= Hash.new
 		@min 				= Hash.new
@@ -51,7 +55,6 @@ class ResultSet
 					this_result << id
 				end
 			end
-			puts "this_result_> #{this_result}"
 			remove_if_key_not_in(this_result)
 		end
 	end
@@ -64,9 +67,7 @@ class ResultSet
 				if r >= col_value
 					this_result << id
 				end
-				puts "@min['#{col_name}'] = #{col_value} -> @record[#{id}] = #{record.send col_name.to_sym}"
 			end
-			puts "this_result_> #{this_result}"
 			remove_if_key_not_in(this_result)
 		end
 	end
@@ -80,7 +81,6 @@ class ResultSet
 					this_result << id
 				end
 			end
-			puts "this_result_> #{this_result}"
 			remove_if_key_not_in(this_result)
 		end
 	end
@@ -94,7 +94,6 @@ class ResultSet
 					this_result << id
 				end
 			end
-			puts "this_result_> #{this_result}"
 			remove_if_key_not_in(this_result)
 		end
 	end
@@ -106,4 +105,3 @@ class ResultSet
 	end
 
 end
-

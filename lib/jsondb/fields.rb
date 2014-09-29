@@ -6,11 +6,11 @@ class Fields
 		@fields = Hash.new
 		@table_name = table_name
 		@raw_data = JSON.parse(raw_data)
-		@raw_data.each do |column_name, values|
-			@fields[column_name] = Field.new(column_name)
-			@fields[column_name].type				= values['type'] 			if values['type']
-			@fields[column_name].default 		= values['default'] 	if values['default']
-			@fields[column_name].nullable 	= values['nullable'] 	if values['nullable']
+		@raw_data['fields'].each do |field_name, values|
+			@fields[field_name] = Field.new(field_name)
+			@fields[field_name].type				= values['type'] 			if values['type']
+			@fields[field_name].default 		= values['default'] 	if values['default']
+			@fields[field_name].nullable 		= values['nullable'] 	if values['nullable']
 		end
 	end
 

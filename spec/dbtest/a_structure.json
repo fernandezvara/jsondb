@@ -1,0 +1,30 @@
+{
+  "last_id": 11,
+  "fields": {
+    "id": {
+      "type": "String",
+      "nullable": true,
+      "default": null
+    },
+    "created_at": {
+      "type": "String",
+      "nullable": true,
+      "default": null
+    },
+    "updated_at": {
+      "type": "String",
+      "nullable": true,
+      "default": null
+    },
+    "a": {
+      "type": "Fixnum",
+      "nullable": true,
+      "default": 0
+    },
+    "b": {
+      "type": "String",
+      "nullable": true,
+      "default": null
+    }
+  }
+}
