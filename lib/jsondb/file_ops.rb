@@ -7,7 +7,6 @@ class FileOps
     @writeable = writeable
     @filename = File.join(@folder, filename)
     @filetype = filetype
-
     if exists?(@folder)
       load 
     else
@@ -37,6 +36,10 @@ class FileOps
     File.delete(@filename) if exists?(@filename)
   end
 
+  def close
+    @file.close if @file
+  end
+
   private
 
   def exists?(file)
@@ -45,9 +48,14 @@ class FileOps
 
   def load
     @new_file = !exists?(@filename)
-    @file = File.open(@filename, 'r') if exists?(@filename)
-    @raw = default_content if @raw.nil?
+    if exists?(@filename)
+      @file = File.open(@filename, 'r') 
+      @raw = @file.read
+    else
+      @raw = default_content
+    end
     @contents = JSON.parse(@raw)
+    @file.close if @file
   end
 
   def default_content

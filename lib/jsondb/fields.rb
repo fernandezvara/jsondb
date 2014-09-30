@@ -1,12 +1,11 @@
 class Fields
 
-	attr_reader :table_name, :raw_data, :fields
+	attr_reader :table_name, :fields
 
-	def initialize(table_name, raw_data)
+	def initialize(table_name, fields_hash)
 		@fields = Hash.new
 		@table_name = table_name
-		@raw_data = JSON.parse(raw_data)
-		@raw_data['fields'].each do |field_name, values|
+		fields_hash.each do |field_name, values|
 			@fields[field_name] = Field.new(field_name)
 			@fields[field_name].type				= values['type'] 			if values['type']
 			@fields[field_name].default 		= values['default'] 	if values['default']
@@ -15,11 +14,12 @@ class Fields
 	end
 
 	def names
-		names = Array.new
-		@fields.each do |n, f|
-			names << n 
-		end
-		return names
+		@fields.keys
+		# names = Array.new
+		# @fields.each do |n, f|
+		# 	names << n 
+		# end
+		# return names
 	end
 
 	def add(name)

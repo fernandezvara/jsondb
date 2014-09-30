@@ -5,6 +5,8 @@ describe "DB" do
 
 	describe "Class" do
 
+		system("rm -f #{File.dirname(__FILE__)}/dbtest/*.json")
+
 		$folder = File.join(File.dirname(__FILE__), './dbtest')
 		$db = Db.new($folder, true)
 
@@ -74,7 +76,7 @@ describe "DB" do
 
 		it "db.table('table_name').fields must be an instance of class Fields" do
 			@table_a_fields = $db.table('a').fields
-			expect(@table_a_fields).to be_an_instance_of(Fields)
+			expect(@table_a_fields).to be_an_instance_of(Hash)
 		end
 
 		# FIELD
@@ -86,8 +88,9 @@ describe "DB" do
 
 		it "db.table('table_name').field.add('field_name') and fields.count == 5" do 
 			@table_a = $db.table('a')
-			@table_a_new_field = @table_a.fields.add('b')
-			expect(@table_a.fields.names.count).to eq(5)
+			@table_a_new_field = @table_a.field('b')
+			expect(@table_a.fields.keys
+				.count).to eq(5)
 		end
 
 		it "db.table('table_name').field('field_name') can be nullable by default" do
@@ -130,7 +133,7 @@ describe "DB" do
 
 		it "db.table('table_name').field.add('field_name')" do 
 			@table_a = $db.table('a')
-			expect(@table_a.fields.names).to eq(['id', 'created_at', 'updated_at', 'a', 'b'])
+			expect(@table_a.fields.keys).to eq(['id', 'created_at', 'updated_at', 'a', 'b'])
 		end
 
 		# RECORDS
@@ -205,17 +208,42 @@ describe "DB" do
 		end
 
 		it "must create 10 new records on table a" do
-			(1..10).each do |x|
+			(1..10000).each do |x|
 				record = $db.table('a').new_record
 				record.a = "string-#{x}"
 				record.b = x
 				$db.table('a').insert(record)
 			end
-			expect($db.table('a').records.keys.count).to eq(11)
+			expect($db.table('a').records.keys.count).to eq(10001)
 		end
 
 		it "must save the database on disk" do 
 			expect($db.persist).to eq(true)
 		end
+
+		# MUST INCORPORATE SOME KIND OF LOCK
+		# it "must allow to close the database" do 
+		# 	expect($db.close).to eq(true)
+		# end
+
+
+		$db2 = Db.new($folder, true)
+
+		it "must have 11 records in table a after load" do 
+			expect($db2.table('a').records.keys.count).to eq(10001)
+		end
+
+		it "add another field with default value" do 
+			field_c = $db2.table('a').field('c')
+			field_c.type = "String"
+			field_c.default = "Default"
+			expect($db2.table('a').fields.keys).to eq(['id', 'created_at', 'updated_at', 'a', 'b', 'c'])
+		end
+
+		it "must save again" do 
+			expect($db2.persist).to eq(true)
+		end
+
+
 	end
 end

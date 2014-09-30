@@ -1,17 +1,13 @@
 #db.rb
 class Db
 
-	attr_reader :root, :tables
+	attr_reader :root, :tables, :writeable
 
 	def initialize(root, writeable = true)
 		@root = root
 		@writeable = writeable
 		@file = FileOps.new(@root, '_db.json', 'db', @writeable)
-		@tables_in_file = @file.contents['tables'] || Hash.new({})
-		@tables = Hash.new
-		@tables_in_file.each do |name, values|
-			@tables[name] = Table.new(name, @root, values['updated_at'], @writeable)
-		end
+		load_tables
 	end
 	
 	def table(name)
@@ -40,11 +36,22 @@ class Db
 		@tables.each do |name, table|
 			if table.persisted == false
 				table.updated_at = Time.now.to_i
-				table.persist if table.persisted == false
+				table.persist
 			end
 			@file.contents['tables'][name] = { "name" => name, "updated_at" => table.updated_at }
 		end
 		return @file.save
 	end
+
+	private
+
+	def load_tables
+		@tables_in_file = @file.contents['tables'] || Hash.new({})
+		@tables = Hash.new
+		@tables_in_file.each do |name, values|
+			@tables[name] = Table.new(name, @root, values['updated_at'], @writeable)
+		end
+	end
+
 
 end

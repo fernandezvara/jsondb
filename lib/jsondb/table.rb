@@ -10,19 +10,23 @@ class Table
 
 		@structure_file = FileOps.new(@folder, "#{@name}_structure.json", 'table_structure', @writeable)
 		@records_file   = FileOps.new(@folder, "#{@name}_records.json", 'table_records', @writeable)
-		@structure_contents = @structure_file.contents
-		@records_contents   = @records_file.contents || {}
+
+		# last_id
+		@last_id = @structure_file.contents["last_id"]
+
 		# Fields
-		@structure_file.contents['fields'] = @structure_file.contents['fields'] || {}
-		@fields = Fields.new(@name, @structure_file.raw)
+		@fields = Hash.new
+
+		if @structure_file.contents["fields"].keys.count
+			@structure_file.contents["fields"].each do |name, field|
+				@fields[name] ||= Field.new(name)
+			end
+		end
 		# add id and timestamps fields if not exists...
 		add_main_fields 
 
-		# last_id
-		@structure_file.contents["last_id"] = @structure_file.contents["last_id"] || 0
-		@last_id = @structure_file.contents["last_id"]
-
 		# Fills records hash
+		@records_contents = @records_file.contents || {}
 		@records = Hash.new
 		@records_contents.each do |id, record|
 			@records[id] = Record.new(@fields, record)
@@ -34,7 +38,7 @@ class Table
 	end
 
 	def field(name)
-		return @fields.field(name)
+		return @fields[name] ||= Field.new(@name)
 	end
 
 	def records
@@ -43,7 +47,8 @@ class Table
 
 	def new_record
 		@persisted = false
-		return Record.new(@fields.to_hash)
+		@updated_at = Time.now.to_i
+		return Record.new(@fields)
 	end
 
 	def query(array_fields = nil)
@@ -107,19 +112,19 @@ class Table
 	end
 
 	def add_main_fields
-		if @fields.field("id").nil?
+		if @fields["id"].nil?
 			id_field = self.field('id')
 			id_field.type 				= "Fixnum"
 			id_field.nullable 		= false
 			id_field.default 		= 0
 		end
-		if @fields.field("created_at").nil?
+		if @fields["created_at"].nil?
 			created_field = self.field('created_at')
 			created_field.type 				= "Fixnum"
 			created_field.nullable 		= false
 			created_field.default 		= 0
 		end
-		if @fields.field("updated_at").nil?
+		if @fields["updated_at"].nil?
 			updated_field = self.field('updated_at')
 			updated_field.type 				= "Fixnum"
 			updated_field.nullable 		= false

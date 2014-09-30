@@ -19,7 +19,7 @@ class Record
 	def method_missing(name, *args)
 		attribute = name.to_s
 
-		if @fields.keys.include?(attribute.sub('=', ''))
+		if @fields.to_hash.keys.include?(attribute.sub('=', ''))
 			if attribute =~ /=$/
 				if @record[attribute] != args[0]
 					@record[attribute.sub('=', '')] = args[0]
@@ -71,8 +71,8 @@ class Record
 
 	def set_defaults
 		@fields.each do |name, values|
-			if values['default'] and @record[name].nil?
-				@record[name] = values['default'] 
+			if values.default and @record[name].nil?
+				@record[name] = values.default
 			end
 		end
 	end
