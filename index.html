@@ -35,7 +35,7 @@
 
 <h3><a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Why use this underpowered lib instead of a real database?</h3>
 
-<p>Well, this lib comes from one motivation: <i><strong>we have really big repositories with Chef configuration</strong></i> that are used for too many people at the same time with many applications/environments/versions (around ~500 combinations).</p>
+<p>Well, this lib comes from one motivation: <i><strong>Currently we have really big repositories with Chef configuration</strong></i> that are used for too many people at the same time with many applications/environments/versions (around ~500 combinations).</p>
 
 <p>To avoid human errors updating the big 'versions.rb' file (~500 lines) we made a first version of this lib using sqlite3 and it worked really nice.</p>
 
@@ -43,7 +43,7 @@
 
 <p>Breaking something in a text file it's easy to fix, so let's make again the versions database but don't edit the files directly.</p>
 
-<p>I hope <b>this</b> can help someone</p>
+<p>I hope <b>this</b> can be useful for someone else.</p>
 
 <p>To start using it:</p>
 <pre><code>$ gem install jsondb
@@ -58,102 +58,102 @@ gem 'jsondb'
 <h3>
 <a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>How to use</h3>
 
-<pre><code>  require 'jsondb'
+<pre><code>require 'jsondb'
 
-  # remember that folder must exists or it will raise an error 
-  # (it's supposed that you want to use old data if exists)
-  # true if you want to allow writes
+# remember that folder must exists or it will raise an error 
+# (it's supposed that you want to use old data if exists)
+# true if you want to allow writes
 
-  db = Db.new('/tmp/dbtest', true)     
+db = Db.new('/tmp/dbtest', true)     
 </code></pre>
 
 <h4>Tables</h4>
-<pre><code>  # create a table
-  db.table_add("table_a")       # Allowed characters
+<pre><code># create a table
+db.table_add("table_a")       # Allowed characters
 
-  # remove a table
-  db.table_remove("table_a")  
+# remove a table
+db.table_remove("table_a")  
 
-  # create/use a table  
-  db.table("table_a")
+# create/use a table  
+db.table("table_a")
 </code></pre>
 
 <h4>Fields</h4>
-<pre><code>  # by default all tables have an id, created_at and updated_at 
-  # fields for every record in the table
+<pre><code># by default all tables have an id, created_at and updated_at 
+# fields for every record in the table
 
-  db.table("table_a").fields.keys 
-  =>  ["id", "created_at", "updated_at"]
+db.table("table_a").fields.keys 
+=>  ["id", "created_at", "updated_at"]
 
-  field = db.table("table_a").field("field_a")
-  field.nullable = true   # defaults to true
-  field.type = "String"   # defaults to "String". Allowed values: 
-      # "Integer", "Float", "String", "Time", "Bool"
-  field.default = ""      # defaults to nil
+field = db.table("table_a").field("field_a")
+field.nullable = true   # defaults to true
+field.type = "String"   # defaults to "String". Allowed values: 
+    # "Integer", "Float", "String", "Time", "Bool"
+field.default = ""      # defaults to nil
 
-  db.table("table_a").fields.keys 
-  =>  ["id", "created_at", "updated_at", "field_a"]
+db.table("table_a").fields.keys 
+=>  ["id", "created_at", "updated_at", "field_a"]
 </code></pre>
 
 <h4>Records</h4>
-<pre><code>  record = db.table("table_a").new_record
-  record.field_a = "Sample data"
+<pre><code>record = db.table("table_a").new_record
+record.field_a = "Sample data"
 
-  db.table("table_a").insert(record) # inserting a record
+db.table("table_a").insert(record) # inserting a record
 
-  record.id 
-  =>  1
+record.id 
+=>  1
 
-  db.table("table_a").insert(record) 
-      # fails, that record already exists!
+db.table("table_a").insert(record) 
+    # fails, that record already exists!
 
-  record.field_a = "Another data"
-  db.table("table_a").update(record)
+record.field_a = "Another data"
+db.table("table_a").update(record)
 
-  # Another record
+# Another record
 
-  record2 = db.table("table_a")
-  record2.field_a = 333 
-      # Fails on validation 333 is a Numeric Type not String
+record2 = db.table("table_a")
+record2.field_a = 333 
+    # Fails on validation 333 is a Numeric Type not String
 
-  db.table("table_a").insert(record)
+db.table("table_a").insert(record)
 
-  db.table("table_a").records.count
-  => 2
+db.table("table_a").records.count
+=> 2
 </code></pre>
 
 <h4>Persistence</h4>
-<pre><code>  db.persist 
-  # It saves database structure and all the tables 
-  # that have changed in the session
+<pre><code>db.persist 
+# It saves database structure and all the tables 
+# that have changed in the session
 </code></pre>
 
 <h4>Queries</h4>
-<pre><code>  query = db.table("table_a").select 
-    # returns an object ResultSet
+<pre><code>query = db.table("table_a").select 
+  # returns an object ResultSet
 
-  result = query.result 
-    # this is a select * from table_a;
+result = query.result 
+  # this is a select * from table_a;
 
-  result = query.equal("field_a", "Sample Data").result
-    # select * from table_a where field_a="Sample Data";
+result = query.equal("field_a", "Sample Data").result
+  # select * from table_a where field_a="Sample Data";
 
-  result.count
-  ==> 1
+result.count
+==> 1
 
-  # you can use:
-  #  equal(field, value)
-  #  min(field, value)
-  #  max(field, value)
-  #  like(field, value)
-  
-  # Queries are chainable
-  result = query.min("id", 1).max("id", 3).result
+# you can use:
+#  equal(field, value)
+#  min(field, value)
+#  max(field, value)
+#  like(field, value)
 
-  # do something with the data....
-  result.each do |id, record|
-    puts record.field_a
-  end
+# Queries are chainable
+result = query.min("id", 1).max("id", 3).result
+
+# do something with the data....
+result.each do |id, record|
+  puts record.field_a
+end
 </code></pre>
 
 <h3>
