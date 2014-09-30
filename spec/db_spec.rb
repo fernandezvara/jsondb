@@ -1,5 +1,4 @@
 require_relative '../lib/jsondb'
-require 'json'
 
 describe "DB" do
 
@@ -72,6 +71,10 @@ describe "DB" do
 			expect{ $db.table_add('a') }.to raise_error(RuntimeError)
 		end
 
+		it "must fail trying to add a table with disallowed characters" do 
+			expect{ $db.table_add('$$$ ') }.to raise_error(RuntimeError)
+		end
+
 		# FIELDS
 
 		it "db.table('table_name').fields must be an instance of class Fields" do
@@ -139,11 +142,16 @@ describe "DB" do
 		# RECORDS
 
 		it "must allow to add a record" do 
-			record = $db.table('a').new_record
-			record.a = 1
-			record.b = "text string"
-			$db.table('a').insert(record)
+			$record1 = $db.table('a').new_record
+			$record1.a = 1
+			$record1.b = "text string"
+			$db.table('a').insert($record1)
 		end
+
+		it "must fail if trying to insert again a record already on the table" do 
+			expect{  $db.table('a').insert($record1) }.to raise_error
+		end
+
 
 		# RESULTS
 		it "must return the record on the table" do
@@ -243,7 +251,6 @@ describe "DB" do
 		it "must save again" do 
 			expect($db2.persist).to eq(true)
 		end
-
 
 	end
 end

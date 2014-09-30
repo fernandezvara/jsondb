@@ -4,6 +4,14 @@ module Validation
 		["String", "Fixnum", "Integer", "Float", "Time", "Bool"]
 	end
 
+	def allowed_name?(name)
+		if (name =~ /^[a-zA-Z0-9_]+$/).nil?
+			raise "Name not allowed. /^[a-zA-Z0-9_]+$/"
+		else
+			return true
+		end
+	end
+
 	def allowed?(type)
 		if allowed_types.include?(type.to_s)
 			return type.to_s

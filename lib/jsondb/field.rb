@@ -5,6 +5,8 @@ class Field
 	attr_reader :name, :type, :nullable, :default
 
 	def initialize(name)
+		allowed_name?(name)
+		
 		@name = name
 		@nullable = true
 		@default = nil

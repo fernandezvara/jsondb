@@ -3,7 +3,11 @@ class Table
 	attr_accessor :updated_at
 	attr_reader :fields, :records, :last_id, :persisted
 
+	include Validation
+
 	def initialize(name, folder, updated_at, writeable)
+		allowed_name?(name)
+		
 		@name = name
 		@folder = folder
 		@writeable = writeable
@@ -60,11 +64,15 @@ class Table
 	end
 
 	def insert(record)
-		id = new_id
-		record.save_with_id(id)
-		@records[id] = record
-		@persisted = false
-		return id
+		if record.id != 0
+			raise "Record already exists."
+		else
+			id = new_id
+			record.save_with_id(id)
+			@records[id] = record
+			@persisted = false
+			return id
+		end
 	end
 
 	def update(record)
