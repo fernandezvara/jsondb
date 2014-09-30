@@ -156,6 +156,17 @@ result.each do |id, record|
 end
 </code></pre>
 
+<h4>Feature development and Tests</h4>
+<p>For testing it uses rspec and guard to help doing in more dynamically. On the <i>Gemfile</i> are already defined all the required gems.</p>
+<pre><code>
+  bundle install
+  guard
+
+  -or-
+
+  rspec spec/db_spec.rb
+</code></pre>
+
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
