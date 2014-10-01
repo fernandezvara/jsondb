@@ -1,8 +1,8 @@
 require_relative '../lib/jsondb'
 
-describe "DB" do
+describe "class" do
 
-	describe "Class" do
+	describe "Db" do
 
 		system("rm -f #{File.dirname(__FILE__)}/dbtest/*.json")
 
@@ -17,7 +17,10 @@ describe "DB" do
 			expect{ Db.new(File.join(File.dirname(__FILE__), './dbtest.error')) }.to raise_error
 		end
 
+	end
+
 		# TABLES
+	describe "Table" do
 
 		it "db.table('table_name') must be an instance of class Table" do 
 			@table_a = $db.table('a')
@@ -75,9 +78,12 @@ describe "DB" do
 			expect{ $db.table_add('$$$ ') }.to raise_error(RuntimeError)
 		end
 
-		# FIELDS
+	end
 
-		it "db.table('table_name').fields must be an instance of class Fields" do
+		# FIELDS
+	describe "Field" do
+
+		it "db.table('table_name').fields must be an instance of Hash" do
 			@table_a_fields = $db.table('a').fields
 			expect(@table_a_fields).to be_an_instance_of(Hash)
 		end
@@ -139,7 +145,10 @@ describe "DB" do
 			expect(@table_a.fields.keys).to eq(['id', 'created_at', 'updated_at', 'a', 'b'])
 		end
 
+	end
+
 		# RECORDS
+	describe "Record" do
 
 		it "must allow to add a record" do 
 			$record1 = $db.table('a').new_record
@@ -151,7 +160,6 @@ describe "DB" do
 		it "must fail if trying to insert again a record already on the table" do 
 			expect{  $db.table('a').insert($record1) }.to raise_error
 		end
-
 
 		# RESULTS
 		it "must return the record on the table" do
@@ -202,7 +210,10 @@ describe "DB" do
 			expect(result.keys.count).to eq(1)
 		end
 
+	end
 		# DATABASE SAVE
+	describe "Db.save" do
+
 		it "must have only one table" do 
 			expect($db.table_names.count).to eq(1)
 		end
@@ -214,6 +225,9 @@ describe "DB" do
 		it "must save the database on disk" do 
 			expect($db.persist).to eq(true)
 		end
+	end
+
+	describe "Record.new" do
 
 		it "must create 10 new records on table a" do
 			(1..10000).each do |x|
