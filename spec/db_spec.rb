@@ -7,14 +7,14 @@ describe "class" do
 		system("rm -f #{File.dirname(__FILE__)}/dbtest/*.json")
 
 		$folder = File.join(File.dirname(__FILE__), './dbtest')
-		$db = Db.new($folder, true)
+		$db = JSONdb::Db.new($folder, true)
 
 		it "db should be an instance of class Db" do
-			expect($db).to be_an_instance_of(Db)
+			expect($db).to be_an_instance_of(JSONdb::Db)
 		end
 
 		it "must fail if db folder does not exists" do 
-			expect{ Db.new(File.join(File.dirname(__FILE__), './dbtest.error')) }.to raise_error
+			expect{ JSONdb::Db.new(File.join(File.dirname(__FILE__), './dbtest.error')) }.to raise_error
 		end
 
 	end
@@ -24,7 +24,7 @@ describe "class" do
 
 		it "db.table('table_name') must be an instance of class Table" do 
 			@table_a = $db.table('a')
-			expect(@table_a).to be_an_instance_of(Table)
+			expect(@table_a).to be_an_instance_of(JSONdb::Table)
 		end
 
 		it "must allow to create tables" do
@@ -92,7 +92,7 @@ describe "class" do
 
 		it "db.table('table_name').field('field_name') must be an instance of class Field" do
 			@table_a_field_a = $db.table('a').field('a')
-			expect(@table_a_field_a).to be_an_instance_of(Field)
+			expect(@table_a_field_a).to be_an_instance_of(JSONdb::Field)
 		end
 
 		it "db.table('table_name').field.add('field_name') and fields.count == 5" do 
@@ -249,7 +249,7 @@ describe "class" do
 		# end
 
 
-		$db2 = Db.new($folder, true)
+		$db2 = JSONdb::Db.new($folder, true)
 
 		it "must have 11 records in table a after load" do 
 			expect($db2.table('a').records.keys.count).to eq(10001)
