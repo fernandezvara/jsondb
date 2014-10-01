@@ -93,7 +93,9 @@ module JSONdb
 
 		def persist
 			@structure_file.contents['last_id'] = @last_id
-			@structure_file.contents['fields'] = @fields.to_hash
+			@fields.each do |id, field|
+				@structure_file.contents['fields'][id] = field.to_hash
+			end
 			@structure_file.save
 
 			@records_file.contents = {}
