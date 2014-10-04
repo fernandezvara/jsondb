@@ -1,73 +1,83 @@
 module JSONdb
+
   class FileOps
 
-    attr_reader :writeable, :filename, :folder, :raw, :new_file
+    include JSONdb::Logger
 
-    def initialize(folder, filename, filetype, writeable = true)
+    attr_reader :folder, :writeable, :filename, :filetype, :new_file
+
+    attr_accessor :contents
+
+    def initialize(folder, filename, filetype, json = true)
       @folder = folder
-      @writeable = writeable
-      @filename = File.join(@folder, filename)
+      @filename = File.expand_path(File.join(@folder, filename))
       @filetype = filetype
-      if exists?(@folder)
-        load 
-      else
-        raise "Folder '#{@folder}' does not exists."
+      @contents = ""
+      @json = json
+    end
+
+    def read
+      begin
+        if File.exists?(@filename)
+          file = File.open(@filename, 'r') 
+          raw = file.read
+          @new_file = false
+          log("File '#{@filename}' readed.", :debug)
+        else
+          raw = JSONdb.constants.default_file_content[@filetype]
+          @new_file = true
+        end
+        if @json == true
+          @contents = JSON.parse(raw)
+        else
+          @contents = raw
+        end
+        file.close if file
+        log("File '#{@filename}' parsed.", :debug)
+        return true
+      rescue
+        log("File '#{@filename}' could not read the file.", :error)
+        return false
       end
     end
 
-    def contents=(contents)
-      @contents = contents
+    def write
+      begin
+        file = File.open(@filename, 'w')
+        if @json == true
+          file.write(JSON.pretty_generate(@contents))
+        else 
+          file.write(@contents)
+        end
+        file.close
+        @new_file = false
+        log("File '#{@filename}' content updated.", :debug)
+        return true
+      rescue
+        log("File '#{@filename}' could not open and write the file.", :error)
+        return false
+      end
     end
 
-    def contents
-      @contents
-    end
-
-    def save
-      return false if @writeable == false
-      @file = File.open(@filename, 'w')
-      @raw = JSON.pretty_generate(@contents)
-      @file.write(@raw)
-      @file.close
-      @new_file = false
-      return true
+    def write_line(line)
+      begin
+        file = File.open(@filename, 'a+')
+        file.write("#{line}\n")
+        file.close
+        @new_file = false
+      rescue
+        log("Couldn't write line on file '#{@filename}'.", :error)
+      end
     end
 
     def destroy
-      File.delete(@filename) if exists?(@filename)
-    end
-
-    def close
-      @file.close if @file
-    end
-
-    private
-
-    def exists?(file)
-      File.exists?(File.expand_path(file))
-    end
-
-    def load
-      @new_file = !exists?(@filename)
-      if exists?(@filename)
-        @file = File.open(@filename, 'r') 
-        @raw = @file.read
+      if File.exists?(@filename)
+        File.delete(@filename) 
+        log("File '#{@filename}' deleted.", :info)
       else
-        @raw = default_content
+        log("File '#{@filename}' does not exists.", :error)
       end
-      @contents = JSON.parse(@raw)
-      @file.close if @file
     end
 
-    def default_content
-      case @filetype
-      when 'db'
-        '{ "tables": {} }'
-      when 'table_structure'
-        '{ "last_id" : 0, "fields": {} }'
-      when 'table_records'
-        '{ }'
-      end
-    end
-  end
-end
+  end # class
+end # module

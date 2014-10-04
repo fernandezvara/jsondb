@@ -1,92 +1,57 @@
 module JSONdb
-	class Record
 
-		include Validation
+  class Record
 
-		def initialize(fields, data = nil)
-			@fields = fields
-			if data.nil?
-				@record = Hash.new
-				@new = true
-				self.id = 0
-			else
-				@record = data
-				@new = false
-			end
-			@persisted = false
-			set_defaults # we need to apply again the defaults
-		end
+    include JSONdb::Validations::Types
+    include JSONdb::Logger
 
-		def method_missing(name, *args)
-			attribute = name.to_s
+    attr_reader :table_name
 
-			if @fields.to_hash.keys.include?(attribute.sub('=', ''))
-				if attribute =~ /=$/
-					if @record[attribute] != args[0]
-						@record[attribute.sub('=', '')] = args[0]
-						@persisted = true
-					end
-				else
-					@record[attribute]
-				end
-			else
-				raise "Column '#{attribute.sub('=', '')}' do not exists"
-			end
-		end
+    def initialize(table_name, record = nil)
+      @record = Hash.new
 
-		def save_with_id(id)
-			self.created_at = Time.now.to_i
-			self.updated_at = Time.now.to_i
-			self.id = id
-			@new = false
-			@persisted = false
-		end
+      @table_name = table_name
+      if record.nil?
+        @new_record = true
+        @persisted = false
+      else
+        @new_record = false
+        @persisted = true
+        @record = record
+      end
+    end
 
-		def update
-			self.updated_at = Time.now.to_i
-			@new = false
-			@persisted = false
-		end 
+    def fields
+      JSONdb.fields[table_name].to_hash.keys
+    end      
 
-		def to_hash
-			@record
-		end
+    def to_hash
+      @record
+    end
 
-		def new?
-			@new
-		end
+    def set_default_if_nil(name)
+      if @record[name].nil?
+        @record[name] = JSONdb.fields[table_name][name].default if JSONdb.fields[table_name][name].default.nil? == false
+      end
+      return @record[name]
+    end
 
-		def persisted?
-			@persisted
-		end
+    def method_missing(name, *args)
+      name = name.to_s
 
-		def created_at
-			Time.at(@record['created_at'])
-		end
+      if JSONdb.fields[table_name].to_hash.keys.include?(name.sub('=', ''))
+        if name =~ /=$/
+          if @record[name] != args[0]
+            @record[name.sub('=', '')] = args[0]
+          end
+        else
+          set_default_if_nil(name) # returns default value if value(name) is nil
+        end
+      else
+        log("Column '#{name.sub('=', '')}' do not exists", :error)
+      end
+    end
 
-		def persisted_at
-			Time.at(@record['updated_at'])
-		end
+  end
 
-		private
-
-		def set_defaults
-			@fields.each do |name, values|
-				if values.default and @record[name].nil?
-					@record[name] = values.default
-				end
-			end
-		end
-
-		# # TODO : Add Validation
-
-		# def save!
-		# 	raiseif(save, false, "Error saving the record.")
-		# end
-
-		# def save
-		# 	return @table_class.save
-		# end
-
-	end
 end

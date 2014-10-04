@@ -1,50 +1,82 @@
 module JSONdb
-	class Field
 
-		include Validation
+  class Field
 
-		attr_reader :name, :type, :nullable, :default
+    include JSONdb::Validations::Naming
+    include JSONdb::Validations::Types
+    include JSONdb::Logger
 
-		def initialize(name)
-			allowed_name?(name)
-			
-			@name = name
-			@nullable = true
-			@default = nil
-			@type = "String"
-		end
+    #attr_accessor :type, :nullable, :default
 
-		def type=(_class)
-			@type = allowed?(_class)
-		end
+    def initialize(name)
+      @name = name if allowed_name?(name)
 
-		def type
-			@type
-		end
+      # override common setters
+      self.type       = "String"
+      self.nullable   = true
+      self.default    = nil
 
-		def nullable=(value)
-			@nullable = validate_type("Bool", value)
-		end
+      # set_defaults
+    end
 
-		def nullable
-			@nullable
-		end
+    def type=(_class)
+      if allowed_type?(_class)
+        @type = _class  
+        return true
+      else
+        log("'#{_class}' not allowed as field type", :error)
+        return false
+      end
+    end
 
-		def default=(value)
-			@default = validate_type(@type, value)
-		end
+    def nullable=(value)
+      if validate_type("Bool", value)
+        @nullable = value
+        return true
+      else
+        log("'#{value}' not allowed for nullable", :error)
+        return false
+      end
+    end
 
-		def default
-			@default
-		end
+    def default=(value)
+      if validate_type(@type, value)
+        @default = value
+        return true
+      else
+        log("'#{value}' not allowed as #{type} class.")
+        return false
+      end
+    end
 
-		def to_hash
-			data = Hash.new
-			data['type']		= @type
-			data['nullable']	= @nullable
-			data['default']		= @default
-			data
-		end
-		
-	end
+    def nullable
+      @nullable
+    end
+
+    def type
+      @type
+    end
+
+    def default
+      @default
+    end
+
+    def to_hash
+      {
+        "type"      => @type,
+        "nullable"  => @nullable,
+        "default"   => @default
+      }
+    end
+
+    private
+
+    def set_defaults
+      @nullable   = true
+      @default    = nil
+      @type       = "String"
+    end
+
+  end
+
 end
