@@ -13,6 +13,10 @@ module JSONdb
       end
     end
 
+    def tables
+      JSONdb.tables
+    end
+
     def table_names
       JSONdb.tables.keys
     end

@@ -3,6 +3,8 @@ require 'json/pure'
 require 'fileutils'
 
 this_dir = File.dirname(__FILE__)
+require File.join(this_dir, 'jsondb/paginated_hash')
+
 require File.join(this_dir, 'jsondb/constants')
 require File.join(this_dir, 'jsondb/logger')
 require File.join(this_dir, 'jsondb/validations')

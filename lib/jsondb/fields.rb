@@ -11,10 +11,12 @@ module JSONdb
     end
 
     def create_field(name)
+      @persisted = false
       JSONdb.fields[@name][name] = Field.new(name)
     end
 
     def drop_field(name)
+      @persisted = false
       JSONdb.fields[@name][name] = nil
       JSONdb.fields[@name].delete(name)
     end

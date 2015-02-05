@@ -2,9 +2,9 @@ module JSONdb
 
   @@settings    = Settings.new
   @@constants   = Constants.new
-  @@tables      = Hash.new
-  @@fields      = Hash.new
-  @@records     = Hash.new
+  @@tables      = JSONdb::PaginatedHash.new
+  @@fields      = JSONdb::PaginatedHash.new
+  @@records     = JSONdb::PaginatedHash.new
 
 
   def self.settings

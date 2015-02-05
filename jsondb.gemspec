@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'jsondb'
-  s.version     = '0.1.3'
-  s.date        = '2014-10-02'
+  s.version     = '0.1.7'
+  s.date        = '2014-10-06'
   s.summary     = "lib to manage tiny databases in plain JSON files"
   s.description = "Local Database using JSON files"
   s.authors     = ["Antonio Fernandez"]
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "lib/jsondb/table.rb",
     "lib/jsondb/tables.rb",
     "lib/jsondb/validations.rb",
+    "lib/jsondb/paginated_hash.rb"
   ]
   s.homepage    = 'http://fernandezvara.github.io/jsondb/'
   s.license     = 'MIT'

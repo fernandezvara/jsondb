@@ -36,6 +36,21 @@ module JSONdb
       return @record[name]
     end
 
+    def data_from_hash(hash)
+      hash.each do |key, value|
+        @record[key] = value
+      end
+    end
+
+
+    # def created_at
+    #   Time.at(@created_at)
+    # end
+
+    # def updated_at
+    #   Time.at(@updated_at)
+    # end
+
     def method_missing(name, *args)
       name = name.to_s
 

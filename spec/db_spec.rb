@@ -23,7 +23,7 @@ describe "class" do
 	describe "Tables" do
 
 		it "must load up a database on a folder" do 
-			expect(JSONdb.tables).to be_an_instance_of(Hash)
+			expect(JSONdb.tables).to be_an_instance_of(JSONdb::PaginatedHash)
 		end
 
 		it "must create a table with tables.create(name)" do
@@ -217,6 +217,18 @@ describe "class" do
 			expect($db.table('table_a').count).to eq(2998)
 		end	
 
+		it "must insert 110 records using db.insert_into" do
+			$db.table("table_d").create_field("test_d")
+			$db.table("table_d").field("test_d").type="Integer"
+			$db.table("table_d").field("test_d").nullable=true
+			(1..110).each do |x|
+				r = $db.table('table_d').new_record
+				r.test_d = 1000 - x
+				$db.insert_into('table_d', r)
+			end
+			expect($db.table('table_d').count).to eq(110)
+		end
+
 	end
 
 	describe "Db" do 
@@ -335,6 +347,47 @@ describe "class" do
 			end
 			expect($db.select_from('table_c').like('tests_strings', 'ea').result.keys).to eq([])
 		end
+
+	end
+
+	describe "PaginatedHash" do 
+
+		it "must have a total_pages definition" do
+			expect($db.tables.total_pages).to eq(1)
+		end
+
+		it "must return 6 items for tables on page 1" do
+			expect($db.tables.page(1).keys.count).to eq(6)
+		end
+
+		it "must return 6 tables (table_a..table_f) for tables on page 1" do
+			expect($db.tables.page(1).keys).to eq(['table_a', 'table_b', 'table_c', 'table_d', 'table_e', 'table_f'])
+		end
+
+		it "$db.tables must be a JSONdb::PaginatedHash" do
+			expect($db.tables).to be_an_instance_of(JSONdb::PaginatedHash)
+		end
+
+		it "JSONdb.records[__table_name__] must be a JSONdb::PaginatedHash" do
+			expect(JSONdb.records['table_c']).to be_an_instance_of(JSONdb::PaginatedHash)
+		end
+
+		it "$db.table().records must be a JSONdb::PaginatedHash" do
+			expect($db.table('table_c').records).to be_an_instance_of(JSONdb::PaginatedHash)
+		end
+
+		it "page 1 of $db.table('table_a').records must have 20 items" do
+			expect($db.table('table_a').records.page(1).keys.count).to eq(20)
+		end		
+
+		it "$db.table('table_a').records must have 20 pages" do
+			expect($db.table('table_a').records.total_pages).to eq(150)
+		end
+
+		it "$db.table('table_b').records must have 20 pages" do
+			expect($db.table('table_b').records.total_pages).to eq(1)
+		end		
+
 
 	end
 

@@ -6,7 +6,7 @@ module JSONdb
     include JSONdb::Validations::Types
     include JSONdb::Logger
 
-    #attr_accessor :type, :nullable, :default
+    attr_accessor :name
 
     def initialize(name)
       @name = name if allowed_name?(name)

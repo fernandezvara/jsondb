@@ -7,7 +7,7 @@ module JSONdb
     include JSONdb::Fields
     include JSONdb::Records
 
-    attr_reader  :persisted
+    attr_reader  :persisted, :name
     attr_accessor :timestamp, :created_at, :updated_at, :last_id
 
     def initialize(name, new_table = true)
@@ -15,7 +15,7 @@ module JSONdb
       
       @persisted = false
 
-      JSONdb.records[@name] = Hash.new 
+      JSONdb.records[@name] = JSONdb::PaginatedHash.new 
       JSONdb.fields[@name] = Hash.new
 
       set_defaults
@@ -44,6 +44,14 @@ module JSONdb
       @file.destroy
     end
 
+    def created_at
+      Time.at(@created_at)
+    end
+
+    def updated_at
+      Time.at(@updated_at)
+    end
+
     private
 
     def new_id
@@ -68,7 +76,7 @@ module JSONdb
 
           records_in_file = @file.contents
       
-          JSONdb.records[@name] = Hash.new
+          # JSONdb.records[@name] = Hash.new
           records_in_file.each do |key, values|
             JSONdb.records[@name][values['id']] = Record.new(@name, values)
           end

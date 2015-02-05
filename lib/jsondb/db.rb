@@ -2,7 +2,7 @@ module JSONdb
 
   class Db
 
-    attr_reader :created_at, :updated_at, :folder, :tables
+    attr_reader :created_at, :updated_at, :folder
 
     include JSONdb::Tables
     include JSONdb::Commands

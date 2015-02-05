@@ -6,6 +6,10 @@ module JSONdb
       JSONdb.records[@name][key]
     end
 
+    def records
+      JSONdb.records[@name]
+    end
+
     def new_record
       return JSONdb::Record.new(@name)
     end
@@ -25,7 +29,7 @@ module JSONdb
       JSONdb.records[@name][record.id] = record
     end
 
-    def drop_record(record)
+    def delete_record(record)
       begin
         @persisted = false
         JSONdb.records[@name][record.id] = nil
@@ -36,6 +40,8 @@ module JSONdb
         return false
       end
     end
+
+    alias :drop_record :delete_record
 
     def exists?(record)
       !JSONdb.records[@name][record.id].nil?
