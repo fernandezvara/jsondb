@@ -9,7 +9,6 @@ describe "class" do
 
 		$folder = File.expand_path(File.join(File.dirname(__FILE__), './dbtest'))
 
-		puts "\n\n\n********\n\n\n #{$folder}\n\n\n****************"
 		$db = JSONdb::Db.new($folder, true, true)
 
 		JSONdb.settings.verbose = false
