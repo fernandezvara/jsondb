@@ -6,4 +6,6 @@ gem 'rspec', '= 3.1.0'
 gem 'guard-rspec', '= 4.3.1'
 gem 'terminal-notifier-guard', '= 1.5.3'
 
+gem 'coveralls', require: false
+
 gemspec
