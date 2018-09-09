@@ -60,7 +60,7 @@ module JSONdb
       @file = FileOps.new(@folder, '_db.json', 'db')
       @file.read
       tables_in_file = @file.contents['tables']
-      
+
       tables_in_file.each do |table_name, values|
         JSONdb.tables[table_name] = JSONdb::Table.new(table_name, false)
         JSONdb.tables[table_name].created_at = values['created_at']
@@ -70,8 +70,8 @@ module JSONdb
         # fields
         fields_in_file = values['fields']
         fields_in_file.each do |field_name, field_values|
-          JSONdb.fields[table_name][field_name] = Field.new(field_name) 
-          JSONdb.fields[table_name][field_name].type      = field_values['type']  
+          JSONdb.fields[table_name][field_name] = Field.new(field_name)
+          JSONdb.fields[table_name][field_name].type      = field_values['type']
           JSONdb.fields[table_name][field_name].nullable = field_values['nullable']
           JSONdb.fields[table_name][field_name].default   = field_values['default']
         end

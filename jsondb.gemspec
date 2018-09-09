@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'jsondb'
-  s.version     = '0.1.7'
-  s.date        = '2014-10-06'
+  s.version     = '0.2.0'
+  s.date        = '2018-09-09'
   s.summary     = "lib to manage tiny databases in plain JSON files"
   s.description = "Local Database using JSON files"
   s.authors     = ["Antonio Fernandez"]
