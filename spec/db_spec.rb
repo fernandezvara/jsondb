@@ -182,7 +182,7 @@ describe "class" do
 			(1..1000).each do |x|
 				r = $db.table('table_a').new_record
 				r.test1 = 1000 - x
-				$db.insert_into('table_a', r)
+				$db.insert_into(r)
 			end
 			expect($db.table('table_a').count).to eq(1000)
 		end
@@ -191,7 +191,7 @@ describe "class" do
 			(1..1000).each do |x|
 				r = $db.table('table_a').new_record
 				r.test1 = 1000 - x
-				$db.insert('table_a', r)
+				$db.insert(r)
 			end
 			expect($db.table('table_a').count).to eq(2000)
 		end
@@ -207,7 +207,7 @@ describe "class" do
 
 		it "must delete a record using db.delete(table_name, record)" do
 			r = $db.table("table_a").record(2300)
-			expect($db.delete("table_a", r)).to eq(true)
+			expect($db.delete(r)).to eq(true)
 		end
 
 		it "must delete a record using db.delete(table_name, record)" do
@@ -219,14 +219,14 @@ describe "class" do
 			expect($db.table('table_a').count).to eq(2998)
 		end
 
-		it "must insert 110 records using db.insert_into" do
+		it "must insert 110 records using db.insert" do
 			$db.table("table_d").create_field("test_d")
 			$db.table("table_d").field("test_d").type="Integer"
 			$db.table("table_d").field("test_d").nullable=true
 			(1..110).each do |x|
 				r = $db.table('table_d').new_record
 				r.test_d = 1000 - x
-				$db.insert_into('table_d', r)
+				$db.insert(r)
 			end
 			expect($db.table('table_d').count).to eq(110)
 		end
@@ -253,13 +253,13 @@ describe "class" do
 		it "must allow to add a record to table_b" do
 			r = $db.table('table_b').new_record
 			r.test_floats = 14.0
-			expect($db.insert_into('table_b', r)).to eq(true)
+			expect($db.insert_into(r)).to eq(true)
 		end
 
 		it "must allow to add a record to table_b and convert a Fixnum into Float for a float type field" do
 			r = $db.table('table_b').new_record
 			r.test_floats = 15
-			expect($db.insert_into('table_b', r)).to eq(true)
+			expect($db.insert_into(r)).to eq(true)
 		end
 
 		it "must have 2 records on table_b" do
@@ -281,11 +281,11 @@ describe "class" do
 			r4.tests_strings = "aeaea"
 			r5 = $db.table('table_c').new_record
 			r5.tests_strings = "aeiou"
-			$db.insert_into('table_c', r1)
-			$db.insert_into('table_c', r2)
-			$db.insert_into('table_c', r3)
-			$db.insert_into('table_c', r4)
-			$db.insert_into('table_c', r5)
+			$db.insert_into(r1)
+			$db.insert_into(r2)
+			$db.insert_into(r3)
+			$db.insert_into(r4)
+			$db.insert_into(r5)
 			expect($db.table('table_c').record_count).to eq(5)
 		end
 

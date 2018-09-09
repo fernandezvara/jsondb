@@ -54,7 +54,7 @@ module JSONdb
     end
 
     def delete_by_id(table_name, id)
-      return delete(table_name, JSONdb.records[table_name][id])
+      return delete(JSONdb.records[table_name][id])
     end
 
     def new_record_for(table_name)
