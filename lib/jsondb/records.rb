@@ -15,9 +15,10 @@ module JSONdb
     end
 
     def insert_record(record)
+      log('Not a record object', :error, true) if record.class != Record
       @persisted = false
       @updated_at = Time.now.to_i # updated table updated_at time
-      
+
       record.id = new_id
       record.created_at = Time.now.to_i
       record.updated_at = Time.now.to_i
@@ -41,8 +42,6 @@ module JSONdb
       end
     end
 
-    alias :drop_record :delete_record
-
     def exists?(record)
       !JSONdb.records[@name][record.id].nil?
     end
@@ -51,16 +50,17 @@ module JSONdb
       JSONdb.records[@name].keys.count
     end
 
+    alias :insert :insert_record
+    alias :update :update_record
+    alias :drop_record :delete_record
     alias :count :record_count
 
     def records_to_hash
-      to_hash = Hash.new
+      h = Hash.new
       JSONdb.records[@name].each do |key, values|
-        to_hash = to_hash.merge({
-          key => values.to_hash
-        })
+        h[key] = values.to_hash
       end
-      return to_hash
+      return h
     end
 
   end
